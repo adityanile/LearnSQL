@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model QuestionData{
+
+  id Int @id @default(autoincrement())
+  que String 
+  op1 String
+  op2 String
+  op3 String
+  op4 String
+
+  correct String
+
+  tag String
+  level Int
+}
