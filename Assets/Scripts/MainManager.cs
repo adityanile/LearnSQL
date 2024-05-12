@@ -55,6 +55,15 @@ public class MainManager : MonoBehaviour
     // Writes Current session info in local Storage
     public void UpdateLocalStorage()
     {
+        // Settting isOpen true for next time
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 6; j++)
+            {
+                mainData.categories[i].levels[j].isopen = true;
+            }
+        }
+
         string json = JsonUtility.ToJson(mainData,true);
         storageManager.WriteThisSessionData(json);
     }
