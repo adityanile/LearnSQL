@@ -19,9 +19,9 @@ public class LocalStorageManager : MonoBehaviour
         }
     }
 
-    private void Start()
+    public void WriteThisSessionData(string json)
     {
-        
+        File.WriteAllText(jsonPath, json);
     }
 
     public string GetMeAllData()

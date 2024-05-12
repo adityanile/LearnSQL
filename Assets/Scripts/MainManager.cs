@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -44,6 +45,29 @@ public class MainManager : MonoBehaviour
             }
         }
 
+    }
+
+    // Writes Current session info in local Storage
+    public void UpdateLocalStorage()
+    {
+        string json = JsonUtility.ToJson(mainData,true);
+        storageManager.WriteThisSessionData(json);
+    }
+
+    public int UpdateCurrentSessionScore(Tag tag, int level, int score)
+    {
+        int prevscore = mainData.categories[Convert.ToInt32(tag)].levels[level].prevCorrect;
+        
+        if (score > prevscore)
+        {
+            mainData.categories[Convert.ToInt32(tag)].levels[level].prevCorrect = score;
+            return score - prevscore;
+        }
+        else
+        {
+            return 0;
+        }
+        
     }
 
     // This function will fetch question data from server and save it in mainData

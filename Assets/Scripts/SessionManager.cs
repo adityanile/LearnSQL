@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class SessionManager : MonoBehaviour
 {
+    public int maxQuestions = 3;
+
     public Transform options;
     public GameObject option;
 
@@ -38,6 +40,12 @@ public class SessionManager : MonoBehaviour
     public GameObject correctTick;
     public GameObject wrongTick;
 
+    public GameObject submitBtn;
+    public GameObject continueBtn;
+
+    // FInal Score Screen
+    public GameObject scoreScreen;
+
     private void Start()
     {
         shownQuestion = new List<int>();
@@ -48,6 +56,8 @@ public class SessionManager : MonoBehaviour
     {
         if(gotCurrentAnswer)
         {
+            gotCurrentAnswer = false;
+
             if (ValidateAnswer())
             {
                 UpdateCorrectUI();
@@ -65,8 +75,54 @@ public class SessionManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         correctTick.SetActive(false);
 
-        // Now Show Next Question by resetting all the Necessary Things
+        OnClickContinue();
     }
+
+    public void OnClickContinue()
+    {
+       
+        if (++currentCount < maxQuestions)
+        {
+            Reset();
+            GetNextQuestion();
+        }
+        else
+        {
+            // Now Session is completed, Update current solve score in mainData if it is greated then previous
+            int difference = mainManager.UpdateCurrentSessionScore(tag, level, correct);
+            
+            // Also save this in local Storage for next time if player has earned any points
+            if(difference > 0)
+            {
+                mainManager.UpdateLocalStorage();
+            }
+
+            gameObject.SetActive(false);
+
+            // Show the Final Screen For the Session
+            scoreScreen.SetActive(true);
+            scoreScreen.GetComponent<ScoreScreenManager>().SetScore(correct, difference);
+        }
+    }
+
+    private void Reset()
+    {
+        foreach(var opt in optPref)
+        {
+            Destroy(opt);
+        }
+        optPref = new List<GameObject>();
+
+        currOptPref = null;
+
+        currentQuestion = null;
+        currentOption = "";
+        gotCurrentAnswer = false;
+
+        submitBtn.SetActive(true);
+        continueBtn.SetActive(false);
+    }
+
     IEnumerator ShowWrongTick()
     {
         wrongTick.SetActive(true);
@@ -85,6 +141,9 @@ public class SessionManager : MonoBehaviour
             OptionManager opt = obj.GetComponent<OptionManager>();
             opt.ShowCorrectMarking();
         }
+
+        submitBtn.SetActive(false);
+        continueBtn.SetActive(true);
     }
 
     public void UpdateCorrectUI()
