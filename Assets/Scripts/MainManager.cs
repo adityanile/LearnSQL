@@ -1,18 +1,15 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Net;
-using System.Reflection.Emit;
 using UnityEngine;
 using UnityEngine.Networking;
 
 public class MainManager : MonoBehaviour
 {
-    [SerializeField]
-    private MainData mainData;
+    public MainData mainData;
 
     private LocalStorageManager storageManager;
     private string apiUrl = "https://learn-sql.vercel.app/getMeQuestions";
+    public SessionManager sessionManager;
 
     private void Awake()
     {
@@ -56,14 +53,14 @@ public class MainManager : MonoBehaviour
         payload.tag = tag;
         payload.level = level;
 
-        string json = JsonUtility.ToJson(payload);  
+        string json = JsonUtility.ToJson(payload);
 
         StartCoroutine(GetQuestionsAPI(json));
     }
 
     IEnumerator GetQuestionsAPI(string payload)
     {
-        using(UnityWebRequest req = UnityWebRequest.Post(apiUrl, payload, "application/json"))
+        using (UnityWebRequest req = UnityWebRequest.Post(apiUrl, payload, "application/json"))
         {
             yield return req.SendWebRequest();
 
@@ -76,8 +73,8 @@ public class MainManager : MonoBehaviour
                 received = JsonUtility.FromJson<Received>(rcv);
 
                 // Set main data to these received Data
-                
-                if(received.ststus == "success")
+
+                if (received.ststus == "success")
                 {
                     if (received.ret.Length > 0)
                     {
@@ -89,6 +86,7 @@ public class MainManager : MonoBehaviour
                             mainData.categories[Convert.ToInt32(st)].levels[index].questions = received.ret;
 
                             // Call function from here to show question for a session
+                            sessionManager.GetNextQuestion();
                         }
                     }
                     else
@@ -100,7 +98,7 @@ public class MainManager : MonoBehaviour
                 {
                     Debug.Log("Error Fetching Data");
                 }
-                
+
 
 
             }
@@ -111,6 +109,7 @@ public class MainManager : MonoBehaviour
 
         }
     }
+}
 
     // To make payload json
     [System.Serializable]
@@ -129,20 +128,20 @@ public class MainManager : MonoBehaviour
 
     // Class To Manager Data after fetching Question
     [System.Serializable]
-    class MainData
+    public class MainData
     {
         public Category[] categories;
     }
 
     [System.Serializable]
-    class Category
+    public class Category
     {
         public string tag;
         public Level[] levels;
     }
 
     [System.Serializable]
-    class Level
+    public class Level
     {
         public int prevCorrect;
         public bool isopen = true;
@@ -165,8 +164,6 @@ public class MainManager : MonoBehaviour
         public string tag;
         public int level;
     }
-
-}
 
 [System.Serializable]
 public enum Tag
