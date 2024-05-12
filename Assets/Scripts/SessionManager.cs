@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SessionManager : MonoBehaviour
@@ -13,16 +14,16 @@ public class SessionManager : MonoBehaviour
     public GameObject option;
 
     public TextMeshProUGUI question;
-    private int currentCount = 0;
+    private int currentCount;
 
     // Setting UP tag and Level According to user
-    private Tag tag = Tag.Theory;
-    private int level = 1;
+    private Tag tag;
+    private int level;
 
     public MainManager mainManager;
 
     // This list hold the correct Answers of this session
-    private int correct = 0;
+    private int correct;
     private List<int> shownQuestion;
     public TextMeshProUGUI correctUi;
 
@@ -45,11 +46,23 @@ public class SessionManager : MonoBehaviour
 
     // FInal Score Screen
     public GameObject scoreScreen;
+    public GameObject screen1;
 
-    private void Start()
+    // Run this Method after Starting new Session
+    public void Init(Tag tg, int lvl)
     {
+        tag = tg;
+        level = lvl;
+
         shownQuestion = new List<int>();
         optPref = new List<GameObject>();
+
+        currentCount = 0;
+        
+        correct = 0;
+        correctUi.text = "Correct - " + correct + "/10";
+
+        scoreScreen.SetActive(false);
     }
 
     public void OnClickSubmit()
@@ -78,12 +91,17 @@ public class SessionManager : MonoBehaviour
         OnClickContinue();
     }
 
+    public void OnClickReturn()
+    {
+        SceneManager.LoadScene(0);
+    }
+
     public void OnClickContinue()
     {
-       
+        Reset();
+
         if (++currentCount < maxQuestions)
         {
-            Reset();
             GetNextQuestion();
         }
         else

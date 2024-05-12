@@ -3,6 +3,7 @@ using System.Collections;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Rendering;
 
 public class MainManager : MonoBehaviour
 {
@@ -15,13 +16,12 @@ public class MainManager : MonoBehaviour
     private void Awake()
     {
         storageManager = GetComponentInChildren<LocalStorageManager>();
+
     }
     // Start is called before the first frame update
     void Start()
     {
         Init();
-
-        FetchQuestionData("Theory", 1);
     }
 
     private void Init()
@@ -44,7 +44,12 @@ public class MainManager : MonoBehaviour
                 mainData.categories[i].levels[j].isopen = false;
             }
         }
+    }
 
+    public void StartSessionManager(Tag tag, int level)
+    {
+        sessionManager.gameObject.SetActive(true);
+        sessionManager.Init(tag, level);
     }
 
     // Writes Current session info in local Storage
