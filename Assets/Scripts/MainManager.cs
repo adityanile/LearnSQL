@@ -13,10 +13,15 @@ public class MainManager : MonoBehaviour
     private string apiUrl = "https://learn-sql.vercel.app/getMeQuestions";
     public SessionManager sessionManager;
 
+    public GameObject loading;
+    public GameObject error;
+
     private void Awake()
     {
         storageManager = GetComponentInChildren<LocalStorageManager>();
 
+        loading.SetActive(false);
+        error.SetActive(false);
     }
     // Start is called before the first frame update
     void Start()
@@ -98,9 +103,13 @@ public class MainManager : MonoBehaviour
 
     IEnumerator GetQuestionsAPI(string payload)
     {
+        loading.SetActive(true);
+
         using (UnityWebRequest req = UnityWebRequest.Post(apiUrl, payload, "application/json"))
         {
             yield return req.SendWebRequest();
+
+            loading.SetActive(false);
 
             if (req.result != UnityWebRequest.Result.ConnectionError)
             {
@@ -111,9 +120,9 @@ public class MainManager : MonoBehaviour
                 received = JsonUtility.FromJson<Received>(rcv);
 
                 // Set main data to these received Data
-
                 if (received.ststus == "success")
                 {
+
                     if (received.ret.Length > 0)
                     {
                         // Parsing the received Tag
@@ -129,11 +138,13 @@ public class MainManager : MonoBehaviour
                     }
                     else
                     {
+                        error.SetActive(true);
                         Debug.Log("No Questions Found on Server of Such Type");
                     }
                 }
                 else
                 {
+                    error.SetActive(true);
                     Debug.Log("Error Fetching Data");
                 }
 
