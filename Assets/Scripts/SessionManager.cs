@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class SessionManager : MonoBehaviour
 {
-    public int maxQuestions = 3;
+    private int maxQuestions = 10;
 
     public Transform options;
     public GameObject option;
@@ -219,7 +219,7 @@ public class SessionManager : MonoBehaviour
 
     public void SetData(QuestionData que)
     {
-        question.text = "Q" + que.id + ") " + que.que;
+        question.text = "Q" + (currentCount + 1).ToString() + ") " + que.que;
         string[] opt = { que.op1, que.op2, que.op3, que.op4 };
 
         for (int i = 0; i < 4; i++)
